@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none'"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>鲸鱼娘</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="app" aria-label="鲸鱼娘桌面陪伴">
+      <section id="chatPanel" class="side-panel interactive" aria-label="聊天框">
+        <header class="panel-header">
+          <div id="avatarDot" class="avatar-dot" aria-hidden="true"><img src="../assets/character.png" alt="" /></div>
+          <div class="panel-title">
+            <strong id="chatTitle">和 <b data-pet-name>鲸鱼娘</b> 聊聊</strong>
+            <span><i class="online-dot"></i> 在线 · 随时听你说</span>
+          </div>
+          <button id="chatScaleBtn" class="icon-button scale-button" title="切换对话框大小" aria-label="切换对话框大小">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4M13 17h4v-4M3.5 6.5 7 3M16.5 13.5 13 17"/></svg>
+          </button>
+          <button id="clearChatBtn" class="icon-button" title="新对话" aria-label="新对话">↻</button>
+          <button id="closeChatBtn" class="icon-button" title="收起" aria-label="收起聊天框">×</button>
+        </header>
+
+        <div id="messages" class="messages" aria-live="polite"></div>
+
+        <form id="chatForm" class="composer">
+          <textarea id="chatInput" rows="1" maxlength="8000" placeholder="发消息给 鲸鱼娘…" data-pet-name-placeholder="发消息给 {name}…" aria-label="聊天消息"></textarea>
+          <button id="sendBtn" type="submit" aria-label="发送消息">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.3 3.7 21 11.2a.9.9 0 0 1 0 1.6L4.3 20.3a.9.9 0 0 1-1.2-1.1l1.7-5.6 8.2-1.6-8.2-1.6-1.7-5.6a.9.9 0 0 1 1.2-1.1Z"/></svg>
+          </button>
+        </form>
+      </section>
+
+      <section id="settingsPanel" class="settings-panel interactive" aria-label="桌宠设置">
+        <header class="settings-header">
+          <h2>设置</h2>
+          <button id="closeSettingsBtn" class="icon-button" aria-label="关闭设置">×</button>
+        </header>
+
+        <form id="settingsForm">
+          <div class="settings-content">
+          <div class="field-row two-cols">
+            <label>昵称<input id="petNameInput" name="petName" maxlength="16" /></label>
+            <label>天气城市<input id="cityInput" name="city" maxlength="64" /></label>
+          </div>
+          <label>DeepSeek API Key
+            <div class="key-row">
+              <input id="apiKeyInput" name="apiKey" type="password" autocomplete="off" placeholder="sk-…" />
+              <button id="apiKeyHelpBtn" type="button" class="text-button">获取</button>
+            </div>
+          </label>
+          <div class="field-row two-cols">
+            <label>思考强度
+              <select id="reasoningInput" name="reasoningEffort">
+                <option value="none">无</option>
+                <option value="low">低</option>
+                <option value="medium">中</option>
+                <option value="high">高</option>
+              </select>
+            </label>
+            <label>人物大小
+              <input id="scaleInput" name="scale" type="range" min="0.78" max="1.18" step="0.02" />
+            </label>
+          </div>
+          <fieldset class="opacity-settings">
+            <legend>不透明度</legend>
+            <div class="opacity-grid">
+              <label for="petOpacityInput"><span>人物<output id="petOpacityValue" for="petOpacityInput">100%</output></span><input id="petOpacityInput" name="petOpacity" type="range" min="0" max="100" step="1" value="100" /></label>
+              <label for="chatOpacityInput"><span>对话框<output id="chatOpacityValue" for="chatOpacityInput">80%</output></span><input id="chatOpacityInput" name="chatOpacity" type="range" min="0" max="100" step="1" value="80" /></label>
+              <label for="messageOpacityInput"><span>消息气泡<output id="messageOpacityValue" for="messageOpacityInput">88%</output></span><input id="messageOpacityInput" name="messageOpacity" type="range" min="0" max="100" step="1" value="88" /></label>
+              <label for="inputOpacityInput"><span>输入框<output id="inputOpacityValue" for="inputOpacityInput">92%</output></span><input id="inputOpacityInput" name="inputOpacity" type="range" min="0" max="100" step="1" value="92" /></label>
+              <label for="textOpacityInput"><span>文字<output id="textOpacityValue" for="textOpacityInput">100%</output></span><input id="textOpacityInput" name="textOpacity" type="range" min="0" max="100" step="1" value="100" /></label>
+              <label for="bubbleOpacityInput"><span>问候气泡<output id="bubbleOpacityValue" for="bubbleOpacityInput">50%</output></span><input id="bubbleOpacityInput" name="bubbleOpacity" type="range" min="0" max="100" step="1" value="50" /></label>
+            </div>
+          </fieldset>
+          <div class="toggle-grid">
+            <label class="toggle"><input id="proactiveInput" type="checkbox" /><span></span>主动陪伴</label>
+            <label class="toggle"><input id="voiceInput" type="checkbox" /><span></span>朗读气泡</label>
+            <label class="toggle"><input id="alwaysOnTopInput" type="checkbox" /><span></span>始终置顶</label>
+            <label class="toggle"><input id="launchInput" type="checkbox" /><span></span>开机启动</label>
+          </div>
+          <div class="directory-field">
+            <label for="conversationDirectoryInput">对话保存目录</label>
+            <div class="directory-row">
+              <input id="conversationDirectoryInput" name="conversationDirectory" type="text" spellcheck="false" placeholder="输入文件夹地址" aria-label="对话保存目录" />
+              <button id="chooseConversationDirectoryBtn" type="button" class="text-button">选择</button>
+              <button id="openConversationFolderBtn" type="button" class="text-button">打开</button>
+            </div>
+          </div>
+          </div>
+          <div class="settings-actions">
+            <button id="clearKeyBtn" type="button" class="danger-link">清除 Key</button>
+            <button type="submit" class="primary-button">保存设置</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="petStage" class="pet-stage" aria-label="桌宠人物">
+        <div id="speechBubble" class="speech-bubble" role="status">
+          <span id="bubbleEyebrow" data-pet-name>鲸鱼娘</span>
+          <p id="bubbleText">Hi，我是鲸鱼娘，今天从哪里开始？</p>
+        </div>
+
+        <div id="sparkles" class="sparkles" aria-hidden="true"></div>
+        <div id="petVisual" class="pet-visual interactive" role="button" aria-label="与桌面陪伴人物互动">
+          <img
+            id="petImage"
+            class="pet-image pet-image-base"
+            src="../assets/character.png"
+            alt="蓝紫色长发、女仆裙与鲸尾的桌面陪伴人物"
+            draggable="false"
+          />
+          <img
+            id="petHappyImage"
+            class="pet-image pet-image-happy"
+            src="../assets/character-happy.png"
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+          />
+        </div>
+
+      </section>
+
+      <nav id="contextToolbar" class="context-toolbar interactive" aria-label="桌宠快捷菜单">
+        <button id="contextSettingsBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Zm8 3.8-.2-1.3 1.7-1.4-2-3.4-2.1.8a8.3 8.3 0 0 0-2.2-1.3L14.9 3h-4l-.3 2.4c-.8.3-1.5.7-2.2 1.3l-2.1-.8-2 3.4L6 10.7a7.5 7.5 0 0 0 0 2.6l-1.7 1.4 2 3.4 2.1-.8c.7.6 1.4 1 2.2 1.3l.3 2.4h4l.3-2.4c.8-.3 1.5-.7 2.2-1.3l2.1.8 2-3.4-1.7-1.4L20 12Z"/></svg>
+          <span>设置</span>
+        </button>
+        <button id="contextHideBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l16 16M9.8 9.8a3.1 3.1 0 0 0 4.4 4.4M7 6.3A11.7 11.7 0 0 1 12 5c5.8 0 9 7 9 7a16.8 16.8 0 0 1-2.6 3.6M15.7 17.8A10.9 10.9 0 0 1 12 19c-5.8 0-9-7-9-7a16.8 16.8 0 0 1 2.2-3.2"/></svg>
+          <span>隐藏</span>
+        </button>
+        <button id="contextQuitBtn" class="quit-action">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9M6.3 5.8A8 8 0 1 0 17.7 5.8"/></svg>
+          <span>退出</span>
+        </button>
+      </nav>
+    </main>
+    <script src="renderer.js"></script>
+  </body>
+</html>

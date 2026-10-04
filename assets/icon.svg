@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sky" x1="60" y1="24" x2="470" y2="492" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a9b2ed"/>
+      <stop offset=".52" stop-color="#7f82c5"/>
+      <stop offset="1" stop-color="#595080"/>
+    </linearGradient>
+    <linearGradient id="whale" x1="130" y1="174" x2="333" y2="363" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset="1" stop-color="#d9e4ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="496" height="496" rx="116" fill="url(#sky)"/>
+  <rect x="18" y="18" width="476" height="476" rx="106" fill="none" stroke="#fff" stroke-opacity=".23" stroke-width="3"/>
+  <path d="M62 391c64-33 128 33 194 0s130 33 194 0" fill="none" stroke="#cad4ff" stroke-opacity=".35" stroke-width="12" stroke-linecap="round"/>
+  <path d="M112 424c47-20 93 20 140 0s93 20 140 0" fill="none" stroke="#cad4ff" stroke-opacity=".18" stroke-width="9" stroke-linecap="round"/>
+  <path d="M98 109l5 13 14 5-14 5-5 14-5-14-14-5 14-5Z" fill="#f0ebff" opacity=".85"/>
+  <path d="m394 107 4 10 11 4-11 4-4 11-4-11-10-4 10-4Z" fill="#f0ebff" opacity=".7"/>
+  <path d="M183 156c-3-35-22-48-46-39 1-24 44-34 61 7 14-43 56-38 58-14-28-7-43 12-48 46" fill="#e7edff"/>
+  <path d="M88 274c-6-59 42-104 112-104 66 0 114 37 131 89 32-4 49-29 53-63 13 18 31 31 58 33-9 39-35 61-65 67-23 45-66 72-136 72-86 0-147-33-153-94Z" fill="url(#whale)"/>
+  <path d="M100 300c28 24 73 37 125 37 58 0 105-20 142-53-14 50-62 84-126 84-67 0-115-20-141-68Z" fill="#b8c9f0" opacity=".65"/>
+  <path d="M228 291c21 13 34 28 38 48-31 1-56-12-71-34Z" fill="#8d9ed4"/>
+  <circle cx="142" cy="263" r="10" fill="#575082"/>
+  <circle cx="145" cy="260" r="3" fill="#fff"/>
+  <ellipse cx="150" cy="289" rx="15" ry="8" fill="#dcb9d7" opacity=".72"/>
+  <path d="M108 287c6 12 19 17 30 13" fill="none" stroke="#7d82b2" stroke-width="5" stroke-linecap="round"/>
+</svg>
