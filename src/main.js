@@ -22,7 +22,9 @@ const WINDOW_HEIGHT = 720;
 const CHAT_PANEL = Object.freeze({ left: 8, top: 29, height: 654 });
 const PET_BASE_WIDTH = 403;
 const PET_TRANSFORM_ORIGIN_X = 0.55;
-const PET_EDGE_MARGIN = 10;
+const PET_VISIBLE_FRACTION = 0.875;
+const PET_EDGE_MARGIN = 4;
+const WINDOW_BOTTOM_OVERFLOW = 6;
 const DEFAULT_SETTINGS = Object.freeze({
   petName: '鲸鱼娘',
   city: '上海',
@@ -156,13 +158,12 @@ function defaultWindowPosition() {
 function constrainWindowPosition(position, display, scale = settings.scale) {
   const area = display.workArea;
   const petLeft = WINDOW_WIDTH - 1 - PET_BASE_WIDTH;
-  const petCenter = petLeft + PET_BASE_WIDTH * PET_TRANSFORM_ORIGIN_X
-    + PET_BASE_WIDTH * (0.5 - PET_TRANSFORM_ORIGIN_X) * Number(scale || 1);
+  const petVisibleEdge = petLeft + PET_BASE_WIDTH * PET_TRANSFORM_ORIGIN_X
+    + PET_BASE_WIDTH * (PET_VISIBLE_FRACTION - PET_TRANSFORM_ORIGIN_X) * Number(scale || 1);
   const minX = area.x - CHAT_PANEL.left;
-  const maxXForHalfPet = Math.floor(area.x + area.width - petCenter - PET_EDGE_MARGIN);
-  const maxX = Math.max(minX, maxXForHalfPet);
+  const maxX = Math.max(minX, Math.floor(area.x + area.width - petVisibleEdge - PET_EDGE_MARGIN));
   const minY = area.y - CHAT_PANEL.top;
-  const maxY = Math.max(minY, area.y + area.height - (CHAT_PANEL.top + CHAT_PANEL.height));
+  const maxY = Math.max(minY, area.y + area.height - (WINDOW_HEIGHT - WINDOW_BOTTOM_OVERFLOW));
   return {
     x: Math.round(Math.min(maxX, Math.max(minX, position.x))),
     y: Math.round(Math.min(maxY, Math.max(minY, position.y))),
@@ -195,6 +196,8 @@ function sendToRenderer(channel, payload) {
 
 function createWindow() {
   const position = restoreWindowPosition();
+  settings.windowPosition = position;
+  persistSettings();
   mainWindow = new BrowserWindow({
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,

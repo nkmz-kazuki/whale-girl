@@ -30,7 +30,7 @@ test('all chat layouts stay inside the work area at each drag boundary on primar
   }
 });
 
-test('at least half of the transformed pet remains visible with animation margin at every allowed scale', async (t) => {
+test('seven eighths of the transformed pet remain visible with a four-DIP margin at every allowed scale', async (t) => {
   const { constrain } = await mainHarness(t);
   const workArea = { x: 0, y: 0, width: 1920, height: 1080 };
   for (const scale of [0.78, 1, 1.18]) {
@@ -40,9 +40,85 @@ test('at least half of the transformed pet remains visible with animation margin
     const scaledLeft = origin - 403 * 0.55 * scale;
     const scaledWidth = 403 * scale;
     const visibleWidth = workArea.width - (position.x + scaledLeft);
-    assert.ok(visibleWidth >= scaledWidth / 2 + 10, `half of pet plus breathing margin must remain at scale ${scale}`);
-    assert.ok(visibleWidth < scaledWidth / 2 + 11, 'whole-pixel clamping must allow dragging up to the safe limit');
+    assert.ok(visibleWidth >= scaledWidth * 0.875 + 4, `seven eighths of pet plus margin must remain at scale ${scale}`);
+    assert.ok(visibleWidth < scaledWidth * 0.875 + 5, 'whole-pixel clamping must allow dragging up to the safe limit');
   }
+});
+
+test('the screenshot work area clamps the small pet at x832/y246 and allows only six DIPs below the screen', async (t) => {
+  const { constrain } = await mainHarness(t);
+  const display = { workArea: { x: 0, y: 0, width: 1536, height: 960 } };
+  const position = constrain({ x: 100000, y: 100000 }, display, 0.78);
+  assert.equal(position.x, 832);
+  assert.equal(position.y, 246);
+  assert.equal(position.y + 720 - display.workArea.height, 6);
+  const preserved = constrain({ x: 820, y: 230 }, display, 0.78);
+  assert.equal(preserved.x, 820);
+  assert.equal(preserved.y, 230);
+});
+
+test('incremental drag IPC reaches the right-bottom limit without accumulating movement beyond it', async (t) => {
+  const display = { workArea: { x: 0, y: 0, width: 1536, height: 960 } };
+  const harness = await mainHarness(t, {
+    displays: [display], saved: { scale: 0.78 },
+    windowBounds: { x: 830, y: 244, width: 780, height: 720 },
+    cursorPoint: { x: 1450, y: 850 },
+  });
+  for (let index = 0; index < 20; index += 1) harness.emit('window:move-by', { x: 1, y: 1 });
+  assert.equal(harness.windowBounds.x, 832);
+  assert.equal(harness.windowBounds.y, 246);
+  harness.emit('window:move-by', { x: -1, y: -1 });
+  assert.equal(harness.windowBounds.x, 831);
+  assert.equal(harness.windowBounds.y, 245);
+});
+
+test('startup restores and persists a corrected legacy position beyond the new screenshot limit', async (t) => {
+  const display = { workArea: { x: 0, y: 0, width: 1536, height: 960 } };
+  const harness = await mainHarness(t, {
+    displays: [display], saved: { scale: 0.78, windowPosition: { x: 836, y: 280 } },
+  });
+  const restored = harness.restorePosition();
+  assert.equal(restored.x, 832);
+  assert.equal(restored.y, 246);
+  harness.createWindow();
+  assert.equal(harness.windowBounds.x, 832);
+  assert.equal(harness.windowBounds.y, 246);
+  const persisted = JSON.parse(await fs.readFile(path.join(harness.appPaths.userData, 'settings.json'), 'utf8'));
+  assert.deepEqual(persisted.windowPosition, { x: 832, y: 246 });
+});
+
+test('default and disconnected-display startup positions use a valid primary-screen position', async (t) => {
+  const display = { workArea: { x: 0, y: 0, width: 1536, height: 960 } };
+  const harness = await mainHarness(t, { displays: [display], saved: { scale: 0.78 } });
+  const initial = harness.defaultPosition();
+  assert.equal(initial.x, 744);
+  assert.equal(initial.y, 232);
+  const restored = harness.restorePosition();
+  assert.equal(restored.x, initial.x);
+  assert.equal(restored.y, initial.y);
+  const disconnected = await mainHarness(t, {
+    displays: [display], saved: { scale: 0.78, windowPosition: { x: -5000, y: -5000 } },
+  });
+  const fallback = disconnected.restorePosition();
+  assert.equal(fallback.x, 744);
+  assert.equal(fallback.y, 232);
+});
+
+test('dragging and startup restore use the negative-coordinate secondary monitor work area', async (t) => {
+  const primary = { workArea: { x: 0, y: 0, width: 1536, height: 960 } };
+  const secondary = { workArea: { x: -1536, y: 100, width: 1536, height: 960 } };
+  const harness = await mainHarness(t, {
+    displays: [primary, secondary],
+    saved: { scale: 0.78, windowPosition: { x: -700, y: 400 } },
+    windowBounds: { x: -710, y: 344, width: 780, height: 720 },
+    cursorPoint: { x: -100, y: 850 },
+  });
+  const restored = harness.restorePosition();
+  assert.equal(restored.x, -704);
+  assert.equal(restored.y, 346);
+  harness.emit('window:move-by', { x: 1000, y: 1000 });
+  assert.equal(harness.windowBounds.x, -704);
+  assert.equal(harness.windowBounds.y, 346);
 });
 
 test('saving a changed character scale reclamps and persists the current position on its monitor', async (t) => {
